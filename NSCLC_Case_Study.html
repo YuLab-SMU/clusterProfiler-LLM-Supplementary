@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.25">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="dcterms.date" content="2026-02-06">
+
+<title>ClusterProfiler-LLM: NSCLC Case Study</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="NSCLC_Case_Study_files/libs/clipboard/clipboard.min.js"></script>
+<script src="NSCLC_Case_Study_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="NSCLC_Case_Study_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="NSCLC_Case_Study_files/libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="NSCLC_Case_Study_files/libs/quarto-html/popper.min.js"></script>
+<script src="NSCLC_Case_Study_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="NSCLC_Case_Study_files/libs/quarto-html/anchor.min.js"></script>
+<link href="NSCLC_Case_Study_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="NSCLC_Case_Study_files/libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="NSCLC_Case_Study_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="NSCLC_Case_Study_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="NSCLC_Case_Study_files/libs/bootstrap/bootstrap-4d7f0bce1131f3e5f9547cd857cfbfc8.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="quarto-light">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction"><span class="header-section-number">1</span> Introduction</a></li>
+  <li><a href="#materials-and-methods" id="toc-materials-and-methods" class="nav-link" data-scroll-target="#materials-and-methods"><span class="header-section-number">2</span> Materials and Methods</a>
+  <ul class="collapse">
+  <li><a href="#data-source" id="toc-data-source" class="nav-link" data-scroll-target="#data-source"><span class="header-section-number">2.1</span> Data Source</a></li>
+  <li><a href="#setup" id="toc-setup" class="nav-link" data-scroll-target="#setup"><span class="header-section-number">2.2</span> Setup</a></li>
+  </ul></li>
+  <li><a href="#analysis-workflow" id="toc-analysis-workflow" class="nav-link" data-scroll-target="#analysis-workflow"><span class="header-section-number">3</span> Analysis Workflow</a>
+  <ul class="collapse">
+  <li><a href="#data-preparation" id="toc-data-preparation" class="nav-link" data-scroll-target="#data-preparation"><span class="header-section-number">3.1</span> 1. Data Preparation</a></li>
+  <li><a href="#context-construction" id="toc-context-construction" class="nav-link" data-scroll-target="#context-construction"><span class="header-section-number">3.2</span> 2. Context Construction</a></li>
+  <li><a href="#standard-enrichment-analysis" id="toc-standard-enrichment-analysis" class="nav-link" data-scroll-target="#standard-enrichment-analysis"><span class="header-section-number">3.3</span> 3. Standard Enrichment Analysis</a></li>
+  </ul></li>
+  <li><a href="#results-llm-driven-interpretation" id="toc-results-llm-driven-interpretation" class="nav-link" data-scroll-target="#results-llm-driven-interpretation"><span class="header-section-number">4</span> Results: LLM-Driven Interpretation</a>
+  <ul class="collapse">
+  <li><a href="#task-1-cell-type-annotation-hypothesis-verification" id="toc-task-1-cell-type-annotation-hypothesis-verification" class="nav-link" data-scroll-target="#task-1-cell-type-annotation-hypothesis-verification"><span class="header-section-number">4.1</span> Task 1: Cell Type Annotation (Hypothesis Verification)</a></li>
+  <li><a href="#task-2-phenotypic-characterization" id="toc-task-2-phenotypic-characterization" class="nav-link" data-scroll-target="#task-2-phenotypic-characterization"><span class="header-section-number">4.2</span> Task 2: Phenotypic Characterization</a></li>
+  <li><a href="#task-3-mechanism-interpretation-multi-agent-deep-mode" id="toc-task-3-mechanism-interpretation-multi-agent-deep-mode" class="nav-link" data-scroll-target="#task-3-mechanism-interpretation-multi-agent-deep-mode"><span class="header-section-number">4.3</span> Task 3: Mechanism Interpretation (Multi-Agent Deep Mode)</a></li>
+  <li><a href="#task-4-hierarchical-interpretation" id="toc-task-4-hierarchical-interpretation" class="nav-link" data-scroll-target="#task-4-hierarchical-interpretation"><span class="header-section-number">4.4</span> Task 4: Hierarchical Interpretation</a></li>
+  </ul></li>
+  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion"><span class="header-section-number">5</span> Conclusion</a></li>
+  </ul>
+<div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="NSCLC_Case_Study.pdf"><i class="bi bi-file-pdf"></i>PDF</a></li></ul></div></nav>
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">ClusterProfiler-LLM: NSCLC Case Study</h1>
+<p class="subtitle lead">Automated Interpretation of Nature Genetics (2025) Data</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">February 6, 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="introduction" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Introduction</h1>
+<p>This document demonstrates the capability of <code>clusterProfiler-LLM</code> to reproduce and interpret key findings from a high-complexity single-cell study. We analyze the dataset from <em>Nature Genetics</em> (2025): “Multi-omic profiling highlights factors associated with resistance to immuno-chemotherapy in non-small-cell lung cancer”.</p>
+<p>We compare the automated output of our multi-agent framework against the manual conclusions drawn by the original authors, specifically focusing on:</p>
+<ol type="1">
+<li><strong>Mechanism Interpretation</strong>: Tumor cell states (e.g., NRF2-mediated stress response).</li>
+<li><strong>Cell Type Annotation</strong>: Identification of specific subsets (e.g., SPP1+ Macrophages).</li>
+<li><strong>Phenotypic Characterization</strong>: Immune states (e.g., TIGIT/CTLA4-driven exhaustion).</li>
+</ol>
+</section>
+<section id="materials-and-methods" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Materials and Methods</h1>
+<section id="data-source" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="data-source"><span class="header-section-number">2.1</span> Data Source</h2>
+<ul>
+<li><strong>Study</strong>: Yan et al., <em>Nature Genetics</em>, 2025.</li>
+<li><strong>Context</strong>: NSCLC treated with neoadjuvant ICB + chemotherapy.</li>
+<li><strong>Key Original Findings</strong>:
+<ul>
+<li><strong>SPP1+ Macrophages</strong>: Interact with COL11A1+ CAFs to form a physical barrier.</li>
+<li><strong>Tumor Cells</strong>: “Basal/Stress” state characterized by NRF2 pathway activation.</li>
+<li><strong>T Cells</strong>: Distinct exhaustion trajectories vs.&nbsp;activation.</li>
+</ul></li>
+</ul>
+</section>
+<section id="setup" class="level2" data-number="2.2">
+<h2 data-number="2.2" class="anchored" data-anchor-id="setup"><span class="header-section-number">2.2</span> Setup</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(clusterProfiler)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>This Quarto document renders from pre-computed objects (RDS) to avoid re-running LLM calls during build. To reproduce the results end-to-end, you will need the development version of <code>clusterProfiler</code> that provides <code>interpret()</code>, <code>interpret_agent()</code>, and <code>interpret_hierarchical()</code>, and an LLM backend configured via <code>fanyi</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(fanyi)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>api_key <span class="ot">&lt;-</span> <span class="fu">Sys.getenv</span>(<span class="st">"DEEPSEEK_API_KEY"</span>)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">set_translate_option</span>(<span class="at">source =</span> <span class="st">"dsk"</span>, <span class="at">key =</span> api_key)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+</section>
+<section id="analysis-workflow" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Analysis Workflow</h1>
+<section id="data-preparation" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="data-preparation"><span class="header-section-number">3.1</span> 1. Data Preparation</h2>
+<p>We load the pre-processed marker genes and metadata.</p>
+<p>The case study is distributed with the following inputs in the same directory as this QMD:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">File</th>
+<th style="text-align: left;">What it contains</th>
+<th style="text-align: left;">Used for</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>scobj.markers.rds</code></td>
+<td style="text-align: left;">FindAllMarkers output (per-cluster marker genes)</td>
+<td style="text-align: left;">Selecting top markers for enrichment</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>md.rds</code></td>
+<td style="text-align: left;">Cell-level metadata from the Seurat object</td>
+<td style="text-align: left;">Building context and priors</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>x.rds</code></td>
+<td style="text-align: left;">Cell-marker enrichment (<code>compareCluster(..., fun=enricher)</code>)</td>
+<td style="text-align: left;">LLM interpretation input</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>anno.rds</code>, <code>pheno.rds</code>, <code>deep.rds</code>, <code>hier.rds</code></td>
+<td style="text-align: left;">Pre-computed LLM outputs</td>
+<td style="text-align: left;">Rendering results without live API calls</td>
+</tr>
+</tbody>
+</table>
+<p>The <code>md.rds</code> file is a cell-level metadata table (i.e., <code>scobj@meta.data</code>) saved separately so this case study does not need to bundle the full Seurat object. It is expected to contain, at minimum:</p>
+<ul>
+<li>Study/clinical fields used to summarize dataset context: <code>PathType</code>, <code>Timepoint</code>, <code>PathRes</code>, <code>Drug</code>, <code>Group</code></li>
+<li>Cluster ID used to aggregate priors: <code>seurat_clusters</code></li>
+<li>A coarse lineage/cell class label used as prior knowledge: <code>all_cluster_annotation</code></li>
+</ul>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>scobj.markers <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"./scobj.markers.rds"</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Filter for top 10 markers per cluster</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>scobj.markers <span class="sc">%&gt;%</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(cluster) <span class="sc">%&gt;%</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(avg_log2FC <span class="sc">&gt;</span> <span class="dv">1</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice_head</span>(<span class="at">n =</span> <span class="dv">10</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="ot">-&gt;</span> top10</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>md <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"./md.rds"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="context-construction" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="context-construction"><span class="header-section-number">3.2</span> 2. Context Construction</h2>
+<p>We construct a prompt context based on the study design.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>majority <span class="ot">&lt;-</span> <span class="cf">function</span>(x) <span class="fu">names</span>(<span class="fu">sort</span>(<span class="fu">table</span>(x), <span class="at">decreasing =</span> <span class="cn">TRUE</span>))[<span class="dv">1</span>]</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>ctx <span class="ot">&lt;-</span> <span class="fu">paste0</span>(</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Study setting: NSCLC single-cell RNA-seq in the context of neoadjuvant ICB + chemotherapy. "</span>,</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="st">"This dataset includes paired/longitudinal sampling (pre- vs post-treatment) and response stratification by pathology. "</span>,</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Current object summary: "</span>,</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  <span class="st">"PathType="</span>, <span class="fu">majority</span>(md<span class="sc">$</span>PathType), <span class="st">"; "</span>,</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Timepoint="</span>, <span class="fu">majority</span>(md<span class="sc">$</span>Timepoint), <span class="st">"; "</span>,</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>  <span class="st">"PathologicResponse="</span>, <span class="fu">majority</span>(md<span class="sc">$</span>PathRes), <span class="st">" (e.g., NMPR/MPR/pCR); "</span>,</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Drug="</span>, <span class="fu">majority</span>(md<span class="sc">$</span>Drug), <span class="st">"; "</span>,</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Group="</span>, <span class="fu">majority</span>(md<span class="sc">$</span>Group), <span class="st">". "</span>,</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Goal: annotate clusters/cell states and interpret marker-enrichment results in this context."</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>We also construct two optional inputs used by the interpretation functions:</p>
+<ol type="1">
+<li>A prior vector (<code>prior_vec</code>) derived from the dataset’s coarse lineage annotation (<code>all_cluster_annotation</code>).</li>
+<li>A per-gene fold-change lookup (<code>gene_fold_change</code>) derived from marker statistics.</li>
+</ol>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>prior_tbl <span class="ot">&lt;-</span> md <span class="sc">%&gt;%</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">cluster =</span> .data[[<span class="st">"seurat_clusters"</span>]]) <span class="sc">%&gt;%</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(cluster) <span class="sc">%&gt;%</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">prior =</span> <span class="fu">majority</span>(all_cluster_annotation), <span class="at">.groups =</span> <span class="st">"drop"</span>)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>prior_vec <span class="ot">&lt;-</span> <span class="fu">setNames</span>(prior_tbl<span class="sc">$</span>prior, <span class="fu">as.character</span>(prior_tbl<span class="sc">$</span>cluster))</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>fc_col <span class="ot">&lt;-</span> <span class="cf">if</span> (<span class="st">"avg_log2FC"</span> <span class="sc">%in%</span> <span class="fu">names</span>(top10)) <span class="st">"avg_log2FC"</span> <span class="cf">else</span> <span class="st">"avg_logFC"</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>gene_fc <span class="ot">&lt;-</span> top10 <span class="sc">%&gt;%</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(gene) <span class="sc">%&gt;%</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">fc =</span> <span class="fu">max</span>(.data[[fc_col]], <span class="at">na.rm =</span> <span class="cn">TRUE</span>), <span class="at">.groups =</span> <span class="st">"drop"</span>)</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>gene_fold_change <span class="ot">&lt;-</span> <span class="fu">setNames</span>(gene_fc<span class="sc">$</span>fc, gene_fc<span class="sc">$</span>gene)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="standard-enrichment-analysis" class="level2" data-number="3.3">
+<h2 data-number="3.3" class="anchored" data-anchor-id="standard-enrichment-analysis"><span class="header-section-number">3.3</span> 3. Standard Enrichment Analysis</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"./x.rds"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>The enrichment objects were generated from <code>top10</code> using <code>compareCluster</code>. Cell-marker enrichment used an external TERM2GENE table (<code>Cell_marker_Human.xlsx</code>), which is not bundled in this directory.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>cm <span class="ot">&lt;-</span> readxl<span class="sc">::</span><span class="fu">read_xlsx</span>(<span class="st">"./Cell_marker_Human.xlsx"</span>)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">compareCluster</span>(</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  gene <span class="sc">~</span> cluster,</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> top10,</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">fun =</span> enricher,</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">TERM2GENE =</span> cm[, <span class="fu">c</span>(<span class="st">"cell_name"</span>, <span class="st">"marker"</span>)]</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(x, <span class="st">"./x.rds"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+</section>
+<section id="results-llm-driven-interpretation" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> Results: LLM-Driven Interpretation</h1>
+<section id="task-1-cell-type-annotation-hypothesis-verification" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="task-1-cell-type-annotation-hypothesis-verification"><span class="header-section-number">4.1</span> Task 1: Cell Type Annotation (Hypothesis Verification)</h2>
+<p>We use <code>interpret(task = "celltype")</code> with prior knowledge injection.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(fanyi)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>api_key <span class="ot">&lt;-</span> <span class="fu">Sys.getenv</span>(<span class="st">"DEEPSEEK_API_KEY"</span>)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="fu">set_translate_option</span>(<span class="at">source =</span> <span class="st">"dsk"</span>, <span class="at">key =</span> api_key)</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>anno <span class="ot">&lt;-</span> <span class="fu">interpret</span>(</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">x =</span> x,</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">context =</span> ctx,</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">task =</span> <span class="st">"celltype"</span>,</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">prior =</span> prior_vec,</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">n_pathways =</span> <span class="dv">20</span>,</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">add_ppi =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">gene_fold_change =</span> gene_fold_change,</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">model =</span> <span class="st">"deepseek-chat"</span>,</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">api_key =</span> api_key</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(anno, <span class="st">"./anno.rds"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p><strong>Result:</strong></p>
+<p><a href="./Task1_CellType_Annotation.md"><strong>View Full Cell Type Annotation Results</strong></a></p>
+<p><strong>Comparison with <em>Nature Genetics</em> (2025):</strong></p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Biological Feature</th>
+<th style="text-align: left;">clusterProfiler-LLM Interpretation</th>
+<th style="text-align: left;">Nature Genetics (Original Findings)</th>
+<th style="text-align: left;">Key Match?</th>
+<th style="text-align: left;">Significance</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>Macrophage Identity</strong></td>
+<td style="text-align: left;">Identified <strong>SPI1+ M2-like Macrophages</strong> with immunosuppressive signatures (<em>C1QA/B/C</em>, <em>CD163</em>).</td>
+<td style="text-align: left;">Described <strong>SPP1+ TAMs</strong> as a major immunosuppressive population interacting with CAFs.</td>
+<td style="text-align: left;">✅ <strong>Yes</strong> (M2/TAM overlap)</td>
+<td style="text-align: left;">Major Resistance Mechanism</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Tumor Cell State</strong></td>
+<td style="text-align: left;">Detected <strong>Basal-like Progenitor</strong> state with <em>GPX2</em> and <em>AKR1C1</em> (Oxidative Stress).</td>
+<td style="text-align: left;">Defined <strong>“Basal/Stress”</strong> tumor cell state characterized by <strong>NRF2</strong> activation.</td>
+<td style="text-align: left;">✅ <strong>Direct</strong> (Stress/Basal)</td>
+<td style="text-align: left;">Poor Prognosis Driver</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>Stromal Niche</strong></td>
+<td style="text-align: left;">Annotated <strong>Activated Myofibroblasts</strong> (<em>ACTA2</em>, <em>COL1A2</em>) and Vascular Progenitors.</td>
+<td style="text-align: left;">Detailed <strong>COL11A1+ CAFs</strong> forming a barrier at tumor boundaries.</td>
+<td style="text-align: left;">✅ <strong>Yes</strong> (CAF Activation)</td>
+<td style="text-align: left;">Immune Exclusion</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>T Cell States</strong></td>
+<td style="text-align: left;">Found <strong>IL7R+ Memory T cells</strong> and <strong>Exhausted</strong> subsets.</td>
+<td style="text-align: left;">Highlighted dysfunctional CD8+ T cells and potential for revival.</td>
+<td style="text-align: left;">✅ <strong>Yes</strong></td>
+<td style="text-align: left;">Therapy Response Determinant</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="task-2-phenotypic-characterization" class="level2" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="task-2-phenotypic-characterization"><span class="header-section-number">4.2</span> Task 2: Phenotypic Characterization</h2>
+<p>We use <code>interpret(task = "phenotype")</code> to define the functional state of each cluster.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(fanyi)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>api_key <span class="ot">&lt;-</span> <span class="fu">Sys.getenv</span>(<span class="st">"DEEPSEEK_API_KEY"</span>)</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="fu">set_translate_option</span>(<span class="at">source =</span> <span class="st">"dsk"</span>, <span class="at">key =</span> api_key)</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>pheno <span class="ot">&lt;-</span> <span class="fu">interpret</span>(</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">x =</span> x,</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">context =</span> ctx,</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">task =</span> <span class="st">"phenotype"</span>,</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">n_pathways =</span> <span class="dv">30</span>,</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">add_ppi =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">gene_fold_change =</span> gene_fold_change,</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">model =</span> <span class="st">"deepseek-chat"</span>,</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">api_key =</span> api_key</span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(pheno, <span class="st">"./pheno.rds"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p><strong>Result:</strong></p>
+<p><a href="./Task2_Phenotypic_Characterization.md"><strong>View Full Phenotypic Characterization Results</strong></a></p>
+<p><strong>Comparison with <em>Nature Genetics</em> (2025):</strong></p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Biological Feature</th>
+<th style="text-align: left;">clusterProfiler-LLM Interpretation</th>
+<th style="text-align: left;">Nature Genetics (Original Findings)</th>
+<th style="text-align: left;">Key Match?</th>
+<th style="text-align: left;">Significance</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>Tumor Cell Plasticity</strong></td>
+<td style="text-align: left;">Identified <strong>Basal-like Progenitor</strong> state expressing <em>AKR1C1</em>, <em>GPX2</em> (Detoxification/Stress).</td>
+<td style="text-align: left;">Defined <strong>“Basal/Stress”</strong> state driven by NRF2 (<em>NFE2L2</em>) and oxidative stress response.</td>
+<td style="text-align: left;">✅ <strong>Direct</strong> (AKR1C1/Stress)</td>
+<td style="text-align: left;">Chemoresistance Mechanism</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Fibroblast Activation</strong></td>
+<td style="text-align: left;">Characterized <strong>Activated Myofibroblasts</strong> with high <em>COL1A1</em>, <em>ACTA2</em>, <em>TGFB1</em>.</td>
+<td style="text-align: left;">Described <strong>COL11A1+ CAFs</strong> forming immune-excluded niches.</td>
+<td style="text-align: left;">✅ <strong>Yes</strong> (TGF-() CAFs)</td>
+<td style="text-align: left;">Immune Exclusion Barrier</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>Myeloid Polarization</strong></td>
+<td style="text-align: left;">Detected <strong>Immunosuppressive Macrophages</strong> (<em>C1QA</em>, <em>APOE</em>) with M2-like features.</td>
+<td style="text-align: left;">Highlighted <strong>SPP1+ TAMs</strong> as the dominant immunosuppressive myeloid population.</td>
+<td style="text-align: left;">✅ <strong>Yes</strong> (M2/TAMs)</td>
+<td style="text-align: left;">T-cell Suppression</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>B Cell Function</strong></td>
+<td style="text-align: left;">Noted <strong>Germinal Center B cells</strong> (<em>BCL6</em>, <em>AICDA</em>) indicating humoral immunity.</td>
+<td style="text-align: left;">Discussed <strong>TLS (Tertiary Lymphoid Structure)</strong> presence and B cell maturity.</td>
+<td style="text-align: left;">✅ <strong>Consistent</strong></td>
+<td style="text-align: left;">Anti-tumor Immunity Potential</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="task-3-mechanism-interpretation-multi-agent-deep-mode" class="level2" data-number="4.3">
+<h2 data-number="4.3" class="anchored" data-anchor-id="task-3-mechanism-interpretation-multi-agent-deep-mode"><span class="header-section-number">4.3</span> Task 3: Mechanism Interpretation (Multi-Agent Deep Mode)</h2>
+<p>We use <code>interpret_agent()</code> to reconstruct causal networks, integrating PPI and LogFC data.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(fanyi)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>api_key <span class="ot">&lt;-</span> <span class="fu">Sys.getenv</span>(<span class="st">"DEEPSEEK_API_KEY"</span>)</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="fu">set_translate_option</span>(<span class="at">source =</span> <span class="st">"dsk"</span>, <span class="at">key =</span> api_key)</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>deep <span class="ot">&lt;-</span> <span class="fu">interpret_agent</span>(</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">x =</span> x,</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">context =</span> ctx,</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">n_pathways =</span> <span class="dv">50</span>,</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">add_ppi =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">gene_fold_change =</span> gene_fold_change,</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">model =</span> <span class="st">"deepseek-chat"</span>,</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">api_key =</span> api_key</span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(deep, <span class="st">"./deep.rds"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p><strong>Result:</strong></p>
+<p><a href="./Task3_Mechanism_Interpretation.md"><strong>View Full Mechanism Interpretation Results</strong></a></p>
+<p><strong>Comparison with <em>Nature Genetics</em> (2025):</strong></p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Biological Feature</th>
+<th style="text-align: left;">clusterProfiler-LLM Interpretation</th>
+<th style="text-align: left;">Nature Genetics (Original Findings)</th>
+<th style="text-align: left;">Key Match?</th>
+<th style="text-align: left;">Significance</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>T Cell Exhaustion</strong></td>
+<td style="text-align: left;"><strong>TOX</strong> identified as a key regulator of <strong>Exhausted CD8+ T cells</strong> (<em>PDCD1</em>, <em>HAVCR2</em>).</td>
+<td style="text-align: left;"><strong>Dysfunctional CD8+ T cells</strong> are a major feature of non-responders; exhaustion is a key barrier.</td>
+<td style="text-align: left;">✅ <strong>Direct</strong> (TOX/Exhaustion)</td>
+<td style="text-align: left;">Checkpoint Blockade Target</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Myeloid Regulation</strong></td>
+<td style="text-align: left;"><strong>SPI1 (PU.1)</strong> inferred as the master regulator for <strong>M2-like TAMs</strong> (<em>C1QA</em>, <em>MRC1</em>).</td>
+<td style="text-align: left;"><strong>SPP1+ TAMs</strong> recruit regulatory T cells and suppress adaptive immunity.</td>
+<td style="text-align: left;">✅ <strong>Yes</strong> (Myeloid Driver)</td>
+<td style="text-align: left;">Immunosuppressive Hub</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>B Cell Identity</strong></td>
+<td style="text-align: left;"><strong>PAX5</strong> and <strong>BCL6</strong> regulatory network defines <strong>Follicular/GC B cells</strong>.</td>
+<td style="text-align: left;">Presence of mature B cells in <strong>TLS</strong> correlates with better prognosis.</td>
+<td style="text-align: left;">✅ <strong>Consistent</strong></td>
+<td style="text-align: left;">Prognostic Marker</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Tumor Proliferation</strong></td>
+<td style="text-align: left;"><strong>E2F</strong> targets and <strong>MYC</strong> signaling active in <strong>Cycling Tumor Cells</strong>.</td>
+<td style="text-align: left;">High proliferation rates in specific tumor subclones drive progression.</td>
+<td style="text-align: left;">✅ <strong>Yes</strong></td>
+<td style="text-align: left;">Tumor Aggressiveness</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="task-4-hierarchical-interpretation" class="level2" data-number="4.4">
+<h2 data-number="4.4" class="anchored" data-anchor-id="task-4-hierarchical-interpretation"><span class="header-section-number">4.4</span> Task 4: Hierarchical Interpretation</h2>
+<p>Refining annotations from Major lineage to Minor states using <code>interpret_hierarchical()</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(fanyi)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>api_key <span class="ot">&lt;-</span> <span class="fu">Sys.getenv</span>(<span class="st">"DEEPSEEK_API_KEY"</span>)</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="fu">set_translate_option</span>(<span class="at">source =</span> <span class="st">"dsk"</span>, <span class="at">key =</span> api_key)</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>map_tbl <span class="ot">&lt;-</span> md <span class="sc">%&gt;%</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">minor =</span> <span class="fu">as.character</span>(minor), <span class="at">major =</span> <span class="fu">as.character</span>(major)) <span class="sc">%&gt;%</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(minor, major, <span class="at">name =</span> <span class="st">"n"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(minor) <span class="sc">%&gt;%</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice_max</span>(n, <span class="at">n =</span> <span class="dv">1</span>, <span class="at">with_ties =</span> <span class="cn">FALSE</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>()</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>mapping <span class="ot">&lt;-</span> <span class="fu">setNames</span>(map_tbl<span class="sc">$</span>major, map_tbl<span class="sc">$</span>minor)</span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>top10_minor <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"./top10_minor.rds"</span>)</span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>top10_major <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"./top10_major.rds"</span>)</span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>cm <span class="ot">&lt;-</span> readxl<span class="sc">::</span><span class="fu">read_xlsx</span>(<span class="st">"./Cell_marker_Human.xlsx"</span>)</span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>x_minor <span class="ot">&lt;-</span> <span class="fu">compareCluster</span>(</span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>  gene <span class="sc">~</span> cluster,</span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> top10_minor,</span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a>  <span class="at">fun =</span> enricher,</span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a>  <span class="at">TERM2GENE =</span> cm[, <span class="fu">c</span>(<span class="st">"cell_name"</span>, <span class="st">"marker"</span>)]</span>
+<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(x_minor, <span class="st">"./x_minor.rds"</span>)</span>
+<span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-27"><a href="#cb11-27" aria-hidden="true" tabindex="-1"></a>x_major <span class="ot">&lt;-</span> <span class="fu">compareCluster</span>(</span>
+<span id="cb11-28"><a href="#cb11-28" aria-hidden="true" tabindex="-1"></a>  gene <span class="sc">~</span> cluster,</span>
+<span id="cb11-29"><a href="#cb11-29" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> top10_major,</span>
+<span id="cb11-30"><a href="#cb11-30" aria-hidden="true" tabindex="-1"></a>  <span class="at">fun =</span> enricher,</span>
+<span id="cb11-31"><a href="#cb11-31" aria-hidden="true" tabindex="-1"></a>  <span class="at">TERM2GENE =</span> cm[, <span class="fu">c</span>(<span class="st">"cell_name"</span>, <span class="st">"marker"</span>)]</span>
+<span id="cb11-32"><a href="#cb11-32" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb11-33"><a href="#cb11-33" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(x_major, <span class="st">"./x_major.rds"</span>)</span>
+<span id="cb11-34"><a href="#cb11-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-35"><a href="#cb11-35" aria-hidden="true" tabindex="-1"></a>hier <span class="ot">&lt;-</span> <span class="fu">interpret_hierarchical</span>(</span>
+<span id="cb11-36"><a href="#cb11-36" aria-hidden="true" tabindex="-1"></a>  <span class="at">x_minor =</span> x_minor,</span>
+<span id="cb11-37"><a href="#cb11-37" aria-hidden="true" tabindex="-1"></a>  <span class="at">x_major =</span> x_major,</span>
+<span id="cb11-38"><a href="#cb11-38" aria-hidden="true" tabindex="-1"></a>  <span class="at">mapping =</span> mapping,</span>
+<span id="cb11-39"><a href="#cb11-39" aria-hidden="true" tabindex="-1"></a>  <span class="at">model =</span> <span class="st">"deepseek-chat"</span>,</span>
+<span id="cb11-40"><a href="#cb11-40" aria-hidden="true" tabindex="-1"></a>  <span class="at">api_key =</span> api_key,</span>
+<span id="cb11-41"><a href="#cb11-41" aria-hidden="true" tabindex="-1"></a>  <span class="at">task =</span> <span class="st">"cell_type"</span></span>
+<span id="cb11-42"><a href="#cb11-42" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb11-43"><a href="#cb11-43" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(hier, <span class="st">"./hier.rds"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p><strong>Result:</strong></p>
+<p><a href="./Task4_Hierarchical_Interpretation.md"><strong>View Full Hierarchical Interpretation Results</strong></a></p>
+<p><strong>Comparison with <em>Nature Genetics</em> (2025):</strong></p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Biological Feature</th>
+<th style="text-align: left;">clusterProfiler-LLM Interpretation</th>
+<th style="text-align: left;">Nature Genetics (Original Findings)</th>
+<th style="text-align: left;">Key Match?</th>
+<th style="text-align: left;">Significance</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>CD8+ T Cell Subsets</strong></td>
+<td style="text-align: left;">Distinctly separated <strong>Naïve</strong>, <strong>Memory</strong> (<em>IL7R</em>), and <strong>Exhausted</strong> (<em>TOX</em>, <em>LAG3</em>) T cells.</td>
+<td style="text-align: left;">Emphasized the spectrum from <strong>Pre-dysfunctional</strong> to <strong>Dysfunctional</strong> CD8+ T cells.</td>
+<td style="text-align: left;">✅ <strong>Precise</strong></td>
+<td style="text-align: left;">Therapy Response Continuum</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Macrophage Heterogeneity</strong></td>
+<td style="text-align: left;">Hierarchically resolved <strong>Alveolar Macrophages</strong> vs.&nbsp;<strong>Tumor-Associated Macrophages</strong> (<em>C1QA</em>).</td>
+<td style="text-align: left;">Distinguished resident macrophages from tumor-infiltrating <strong>SPP1+ TAMs</strong>.</td>
+<td style="text-align: left;">✅ <strong>Yes</strong></td>
+<td style="text-align: left;">Origin Matters (Tissue vs.&nbsp;Tumor)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>Tumor Heterogeneity</strong></td>
+<td style="text-align: left;">Sub-classified tumor cells into <strong>Cycling</strong> (<em>MKI67</em>) and <strong>Stress/Basal</strong> (<em>AKR1C1</em>) states.</td>
+<td style="text-align: left;">Mapped tumor macro-clusters to distinct <strong>Cellular States</strong> (Cycling, Stress, Interferon-high).</td>
+<td style="text-align: left;">✅ <strong>Direct</strong></td>
+<td style="text-align: left;">Intratumoral Heterogeneity</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Endothelial States</strong></td>
+<td style="text-align: left;">Identified <strong>Tip cells</strong> and <strong>Stalk cells</strong> indicative of angiogenesis.</td>
+<td style="text-align: left;">Noted <strong>PLVAP+ Endothelial cells</strong> associated with tumor vascularization.</td>
+<td style="text-align: left;">✅ <strong>Consistent</strong></td>
+<td style="text-align: left;">Angiogenesis Targets</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="conclusion" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> Conclusion</h1>
+<p>The <code>clusterProfiler-LLM</code> framework successfully reproduced the key biological insights of the 2025 <em>Nature Genetics</em> study without manual curation. By automating the interpretation of mechanism, cell identity, and phenotype, it accelerates the transition from data to knowledge.</p>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
