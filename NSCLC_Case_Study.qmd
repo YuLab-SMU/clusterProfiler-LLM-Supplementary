@@ -102,15 +102,19 @@ We construct a prompt context based on the study design.
 majority <- function(x) names(sort(table(x), decreasing = TRUE))[1]
 
 ctx <- paste0(
-  "Study setting: NSCLC single-cell RNA-seq in the context of neoadjuvant ICB + chemotherapy. ",
-  "This dataset includes paired/longitudinal sampling (pre- vs post-treatment) and response stratification by pathology. ",
+  "Study setting: NSCLC single-cell RNA-seq in the context of ",
+  "neoadjuvant ICB + chemotherapy. ",
+  "This dataset includes paired/longitudinal sampling ",
+  "(pre- vs post-treatment) and response stratification by pathology. ",
   "Current object summary: ",
   "PathType=", majority(md$PathType), "; ",
   "Timepoint=", majority(md$Timepoint), "; ",
-  "PathologicResponse=", majority(md$PathRes), " (e.g., NMPR/MPR/pCR); ",
+  "PathologicResponse=", majority(md$PathRes), "; ",
+  "Response labels include NMPR/MPR/pCR. ",
   "Drug=", majority(md$Drug), "; ",
   "Group=", majority(md$Group), ". ",
-  "Goal: annotate clusters/cell states and interpret marker-enrichment results in this context."
+  "Goal: annotate clusters/cell states and interpret ",
+  "marker-enrichment results in this context."
 )
 ```
 

@@ -242,16 +242,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>majority <span class="ot">&lt;-</span> <span class="cf">function</span>(x) <span class="fu">names</span>(<span class="fu">sort</span>(<span class="fu">table</span>(x), <span class="at">decreasing =</span> <span class="cn">TRUE</span>))[<span class="dv">1</span>]</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>ctx <span class="ot">&lt;-</span> <span class="fu">paste0</span>(</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Study setting: NSCLC single-cell RNA-seq in the context of neoadjuvant ICB + chemotherapy. "</span>,</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="st">"This dataset includes paired/longitudinal sampling (pre- vs post-treatment) and response stratification by pathology. "</span>,</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Current object summary: "</span>,</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  <span class="st">"PathType="</span>, <span class="fu">majority</span>(md<span class="sc">$</span>PathType), <span class="st">"; "</span>,</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Timepoint="</span>, <span class="fu">majority</span>(md<span class="sc">$</span>Timepoint), <span class="st">"; "</span>,</span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>  <span class="st">"PathologicResponse="</span>, <span class="fu">majority</span>(md<span class="sc">$</span>PathRes), <span class="st">" (e.g., NMPR/MPR/pCR); "</span>,</span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Drug="</span>, <span class="fu">majority</span>(md<span class="sc">$</span>Drug), <span class="st">"; "</span>,</span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Group="</span>, <span class="fu">majority</span>(md<span class="sc">$</span>Group), <span class="st">". "</span>,</span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Goal: annotate clusters/cell states and interpret marker-enrichment results in this context."</span></span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Study setting: NSCLC single-cell RNA-seq in the context of "</span>,</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="st">"neoadjuvant ICB + chemotherapy. "</span>,</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="st">"This dataset includes paired/longitudinal sampling "</span>,</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  <span class="st">"(pre- vs post-treatment) and response stratification by pathology. "</span>,</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Current object summary: "</span>,</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>  <span class="st">"PathType="</span>, <span class="fu">majority</span>(md<span class="sc">$</span>PathType), <span class="st">"; "</span>,</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Timepoint="</span>, <span class="fu">majority</span>(md<span class="sc">$</span>Timepoint), <span class="st">"; "</span>,</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>  <span class="st">"PathologicResponse="</span>, <span class="fu">majority</span>(md<span class="sc">$</span>PathRes), <span class="st">"; "</span>,</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Response labels include NMPR/MPR/pCR. "</span>,</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Drug="</span>, <span class="fu">majority</span>(md<span class="sc">$</span>Drug), <span class="st">"; "</span>,</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Group="</span>, <span class="fu">majority</span>(md<span class="sc">$</span>Group), <span class="st">". "</span>,</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Goal: annotate clusters/cell states and interpret "</span>,</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>  <span class="st">"marker-enrichment results in this context."</span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>We also construct two optional inputs used by the interpretation functions:</p>
 <ol type="1">
