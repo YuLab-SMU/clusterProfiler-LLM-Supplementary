@@ -28,6 +28,12 @@ We compare the automated output of our multi-agent framework against the manual 
 2.  **Cell Type Annotation**: Identification of specific subsets (e.g., SPP1+ Macrophages).
 3.  **Phenotypic Characterization**: Immune states (e.g., TIGIT/CTLA4-driven exhaustion).
 
+::: {.content-visible when-format="pdf"}
+::: {.callout-note}
+Online HTML version: https://yulab-smu.top/clusterProfiler-LLM-Supplementary/NSCLC_Case_Study.html
+:::
+:::
+
 # Materials and Methods
 
 ## Data Source
@@ -188,6 +194,10 @@ sink()
 [**View Full Cell Type Annotation Results**](./Task1_CellType_Annotation.md)
 :::
 
+::: {.content-visible when-format="pdf"}
+Full results (online): https://yulab-smu.top/clusterProfiler-LLM-Supplementary/Task1_CellType_Annotation.md
+:::
+
 **Comparison with *Nature Genetics* (2025):**
 
 | Biological Feature | clusterProfiler-LLM Interpretation | Nature Genetics (Original Findings) | Key Match? | Significance |
@@ -235,6 +245,10 @@ sink()
 [**View Full Phenotypic Characterization Results**](./Task2_Phenotypic_Characterization.md)
 :::
 
+::: {.content-visible when-format="pdf"}
+Full results (online): https://yulab-smu.top/clusterProfiler-LLM-Supplementary/Task2_Phenotypic_Characterization.md
+:::
+
 **Comparison with *Nature Genetics* (2025):**
 
 | Biological Feature | clusterProfiler-LLM Interpretation | Nature Genetics (Original Findings) | Key Match? | Significance |
@@ -279,6 +293,10 @@ sink()
 
 ::: {.content-visible when-format="html"}
 [**View Full Mechanism Interpretation Results**](./Task3_Mechanism_Interpretation.md)
+:::
+
+::: {.content-visible when-format="pdf"}
+Full results (online): https://yulab-smu.top/clusterProfiler-LLM-Supplementary/Task3_Mechanism_Interpretation.md
 :::
 
 **Comparison with *Nature Genetics* (2025):**
@@ -353,6 +371,10 @@ sink()
 
 ::: {.content-visible when-format="html"}
 [**View Full Hierarchical Interpretation Results**](./Task4_Hierarchical_Interpretation.md)
+:::
+
+::: {.content-visible when-format="pdf"}
+Full results (online): https://yulab-smu.top/clusterProfiler-LLM-Supplementary/Task4_Hierarchical_Interpretation.md
 :::
 
 **Comparison with *Nature Genetics* (2025):**

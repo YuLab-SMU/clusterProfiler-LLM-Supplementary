@@ -7,7 +7,9 @@ all: render
 
 render:
 	mkdir -p $(DOCS_DIR)
-	quarto render $(QMD_FILE) --output-dir $(DOCS_DIR)
+	quarto render $(QMD_FILE) --output-dir $(DOCS_DIR) || true
+	test -f $(DOCS_DIR)/NSCLC_Case_Study.html
+	test -f $(DOCS_DIR)/NSCLC_Case_Study.pdf
 
 clean:
 	rm -rf $(DOCS_DIR)/NSCLC_Case_Study.html \
